@@ -202,14 +202,14 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 			public void mouseClicked(MouseEvent e) {
 				if(rdbtnJavno.isSelected()) {
 					try {
-						u.sendMessage(userName.getText().trim(), "true", input.getText().trim(), "");
+						u.sendMessage(userName.getText().trim(), "true", escapeForJava(input.getText().trim(), false), "");
 					} catch (URISyntaxException e1) {
 						e1.printStackTrace();
 						System.out.println("Prišlo je do napake pri pošiljanju javnega sporoèila.");
 					} 
 				} else {
 					try {
-						u.sendMessage(userName.getText().trim(), "false", input.getText(), privatUporabnik.getText().trim());
+						u.sendMessage(userName.getText().trim(), "false", escapeForJava(input.getText().trim(), false), privatUporabnik.getText().trim());
 					} catch (URISyntaxException e1) {
 						e1.printStackTrace();
 						System.out.println("Prišlo je do napake pri pošiljanju privat sporoèila.");
@@ -230,7 +230,31 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 			this.output.setText(chat + message + "\n");
 		} if ((person != "") && (message.length() > 2)) {
 			this.output.setText(chat + person + ": " + message + "\n");
-		}
+		} 
+	}
+	
+	public static String escapeForJava( String value, boolean quote ) {
+	    StringBuilder builder = new StringBuilder();
+	    if( quote )
+	        builder.append( "\"" );
+	    for( char c : value.toCharArray() ) {
+	    	 if( c == '\'' ) {
+	             builder.append( "\\'" );
+	    	 } else if ( c == '\"' ) {
+	             builder.append( "\\\"" );
+	    	 } else if( c == '\r' ) {
+	             builder.append( "\\r" );
+	    	 } else if( c == '\n' ) {
+	             builder.append( "\\n" );
+	    	 } else if( c == '\t' ) {
+	             builder.append( "\\t" );
+	    	 } else {
+	            builder.append( c );
+	        }
+	    }
+	    if( quote )
+	        builder.append( "\"" );
+	    return builder.toString();
 	}
 	
 	@Override

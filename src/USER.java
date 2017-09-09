@@ -129,18 +129,21 @@ public class USER extends TimerTask{
 					.addParameter("stop_cache", time)
 					.build();
 			
-			String message = "{ \"global\" : "+global+", \"text\" : \""+text+"\"  }";
+			String message;
 			
+			//javno sporocilo
+			if (global == "true") {
+				message = "{ \"global\" : "+global+", \"text\" : \""+ text +"\"  }";
+			}
 			// privat sporoèilo
-			if (global == "false") {
+			else {
 				message = "{ \"global\" : "+global+", \"recipient\" : \""+recipient+"\", \"text\" : \""+text+"\"  }";
 			}
 			
 			String responseBody = Request.Post(uri)
 					.bodyString(message, ContentType.APPLICATION_JSON)
 					.execute()
-					.returnContent()
-					.asString();
+					.returnContent().asString();
 
 			if (global == "false") {
 				chat.addMessage("Za " + recipient, responseBody);
