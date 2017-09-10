@@ -233,6 +233,7 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		} 
 	}
 	
+	// funkcija za popravo besedila, ce to vsebuje posebne znake kot so ", \n, ...
 	public static String escapeForJava( String value, boolean quote ) {
 	    StringBuilder builder = new StringBuilder();
 	    if( quote )
@@ -256,10 +257,6 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 	        builder.append( "\"" );
 	    return builder.toString();
 	}
-	
-	@Override
-	public void actionPerformed(ActionEvent e) {
-	}
 
 	@Override
 	public void keyTyped(KeyEvent e) {
@@ -272,13 +269,19 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 	}
 
 	@Override
-	public void keyPressed(KeyEvent e) {
+	public void keyPressed(KeyEvent arg0) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
 		// TODO Auto-generated method stub
 		
 	}

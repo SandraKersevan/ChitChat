@@ -1,14 +1,17 @@
 
-import org.apache.http.client.fluent.Request;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.entity.ContentType;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import org.apache.http.client.fluent.Request;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.ContentType;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class USER extends TimerTask{
 	private ChatFrame chat;
@@ -29,22 +32,31 @@ public class USER extends TimerTask{
 				receiveMessage(this.user);
 			} catch (URISyntaxException e) {
 				e.printStackTrace();
-				System.out.println("Prišlo je do napake pri robotu.");
+			} catch (JSONException e) {
+				e.printStackTrace();
 			}
 		}
 	}
 
 	// ostali uporabniki
-	public void getUsers(){
+	public void getUsers() {
 		try {
-			String hello = Request.Get("http://chitchat.andrej.com/users")
+			String responseBody = Request.Get("http://chitchat.andrej.com/users")
 						  .execute()
 						  .returnContent().asString();
+			
+			String jsonStr = responseBody;
+			JSONArray array = new JSONArray(jsonStr); 
 
-			chat.addMessage("","Trenutni so prisotni: " + hello);
-        } catch (IOException e) {
+			chat.addMessage("", "Trenutno so prisotni: ");
+		    for(int i=0; i<array.length(); i++){
+		    	JSONObject jsonObj  = array.getJSONObject(i);
+			    String prisoten = jsonObj.getString("username");
+			    chat.addMessage("", prisoten);
+		    }
+        } catch (IOException | JSONException e) {
             e.printStackTrace();
-			System.out.println("Prišlo je do napake pri pridobivanju prisotnih uporabnikov.");
+			chat.addMessage("", "Prišlo je do napake pri pridobivanju prisotnih uporabnikov.");
         }
 	}
 
@@ -67,7 +79,6 @@ public class USER extends TimerTask{
         	prijava = false;
             e.printStackTrace();
             chat.addMessage("", "Prišlo je do napake pri prijavi " + user + "!");
-            System.out.println("Prišlo je do napake pri prijavi.");
         }
 	}	
 	
@@ -89,7 +100,6 @@ public class USER extends TimerTask{
         } catch (IOException e) {
         	prijava = true;
             e.printStackTrace();
-			System.out.println("Prišlo je do napake pri odjavi.");
 			chat.addMessage("", "Prišlo je do napake pri odjavi " + user + "!");
         }
 	}
@@ -103,7 +113,7 @@ public class USER extends TimerTask{
 	}
 	
 	// prejeto sporoèilo
-	public void receiveMessage(String user) throws URISyntaxException{
+	public void receiveMessage(String user) throws URISyntaxException, JSONException{
 		try {
 			URI uri = new URIBuilder("http://chitchat.andrej.com/messages")
 			          .addParameter("username", user)
@@ -111,12 +121,19 @@ public class USER extends TimerTask{
 
 			String responseBody = Request.Get(uri)
                             .execute()
-                            .returnContent().asString();	
+                            .returnContent().asString();
 			
-			chat.addMessage(user, responseBody);		
+			String jsonStr = responseBody;
+			JSONArray array = new JSONArray(jsonStr); 
+
+		    for(int i=0; i<array.length(); i++){
+		    	JSONObject jsonObj  = array.getJSONObject(i);
+			    String posiljatelj = jsonObj.getString("sender");
+			    String sporocilo = jsonObj.getString("text");
+			    chat.addMessage(posiljatelj, sporocilo);
+			}
         } catch (IOException e) {
             e.printStackTrace();
-			System.out.println("Prišlo je do napake pri prejemanju sporoèil.");
         }
 	}
 	
@@ -144,15 +161,18 @@ public class USER extends TimerTask{
 					.bodyString(message, ContentType.APPLICATION_JSON)
 					.execute()
 					.returnContent().asString();
-
+			
+			String jsonStr = responseBody;
+			JSONObject jsonObj  = new JSONObject(jsonStr);
+		    String status = jsonObj.getString("status");
+		    
 			if (global == "false") {
-				chat.addMessage("Za " + recipient, responseBody);
+				chat.addMessage("Za " + recipient, status);
 			} else {
-				chat.addMessage(user, responseBody);
+				chat.addMessage(user, status);
 			}
-        } catch (IOException e) {
+        } catch (IOException | JSONException e) {
             e.printStackTrace();
-			System.out.println("Prišlo je do napake pri pošiljanju sporoèila.");
 			chat.addMessage("", "Prišlo je do napake pri pošiljanju sporoèila!");
         }
 	}
