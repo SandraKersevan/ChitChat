@@ -22,6 +22,8 @@ import java.awt.event.MouseEvent;
 import java.net.URISyntaxException;
 
 import javax.swing.JRadioButton;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 @SuppressWarnings("serial")
 public class ChatFrame extends JFrame implements ActionListener, KeyListener {
@@ -35,6 +37,22 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		
 	public ChatFrame() {
 		super();
+		
+		// ob zapiranju programa odjavi uporabnika, èe se je ta pozabil
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent arg0) {
+				try {
+					u.user = userName.getText();
+					u.logOut(userName.getText().trim());
+				    System.exit(0);
+				} catch (URISyntaxException e) {
+					e.printStackTrace();
+					System.out.println("Nisem uspešno odjavil zadnjega prijavljenega.");
+				}
+			}
+		});
+		
 		setTitle("ChitChat");
 		Container pane = this.getContentPane();
 		GridBagLayout gridBagLayout = new GridBagLayout();
@@ -140,6 +158,7 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 					System.out.println("Prišlo je do napake ob kliku na gumb Prijava.");
 				}
 				if (u.prijava){
+					userName.setEnabled(false);
 					btnOdjava.setEnabled(true);
 					btnPrisotni.setEnabled(true);
 					btnPrijava.setEnabled(false);
@@ -154,11 +173,13 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 			public void mouseClicked(MouseEvent e) {
 				try {
 					u.logOut(userName.getText().trim());
+					userName.setEnabled(true);
 				} catch (URISyntaxException e1) {
 					e1.printStackTrace();
 					System.out.println("Prišlo je do napake ob kliku na gumb Odjava.");
 				}
 				if (!u.prijava) {
+					userName.setEnabled(true);
 					btnOdjava.setEnabled(false);
 					btnPrisotni.setEnabled(false);
 					btnPrijava.setEnabled(true);
@@ -226,9 +247,9 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 	 */
 	public void addMessage(String person, String message) {
 		String chat = this.output.getText();
-		if ((person == "") && (message.length() > 2)) {
+		if (person == "") {
 			this.output.setText(chat + message + "\n");
-		} if ((person != "") && (message.length() > 2)) {
+		} if (person != "") {
 			this.output.setText(chat + person + ": " + message + "\n");
 		} 
 	}

@@ -12,8 +12,6 @@
 	<classpathentry kind="lib" path="/Projekt/httpcore-4.4.6.jar"/>
 	<classpathentry kind="lib" path="/Projekt/httpmime-4.5.3.jar"/>
 	<classpathentry kind="lib" path="/Projekt/jna-4.1.0.jar"/>
-	<classpathentry kind="lib" path="/Projekt/com.fasterxml.jackson.core.jar"/>
-	<classpathentry kind="lib" path="/Projekt/com.fasterxml.jackson.databind.jar"/>
-	<classpathentry kind="lib" path="/Projekt/com.fasterxml.jackson.annotations.jar"/>
+	<classpathentry kind="lib" path="/Projekt/java-json.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
